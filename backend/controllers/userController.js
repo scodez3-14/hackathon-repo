@@ -3,14 +3,30 @@ export async function verifyEmailOtp(req, res, next) {
   const { email, otp } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: 'User not found' });
-    if (user.isEmailVerified) return res.status(400).json({ msg: 'Email already verified' });
-    if (user.emailVerificationOtp !== otp) return res.status(400).json({ msg: 'Invalid OTP' });
-    if (user.emailVerificationExpires < new Date()) return res.status(400).json({ msg: 'OTP expired' });
+    console.log('OTP verification request:', { email, otp });
+    if (!user) {
+      console.log('User not found');
+      return res.status(400).json({ msg: 'User not found' });
+    }
+    if (user.isEmailVerified) {
+      console.log('Email already verified');
+      return res.status(400).json({ msg: 'Email already verified' });
+    }
+    console.log('Stored OTP:', user.emailVerificationOtp);
+    console.log('Stored OTP Expiry:', user.emailVerificationExpires);
+    if (user.emailVerificationOtp !== otp) {
+      console.log('Invalid OTP');
+      return res.status(400).json({ msg: 'Invalid OTP' });
+    }
+    if (user.emailVerificationExpires < new Date()) {
+      console.log('OTP expired');
+      return res.status(400).json({ msg: 'OTP expired' });
+    }
     user.isEmailVerified = true;
     user.emailVerificationOtp = undefined;
     user.emailVerificationExpires = undefined;
     await user.save();
+    console.log('Email verified successfully');
     res.json({ msg: 'Email verified successfully' });
   } catch (err) {
     next(err);

@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -27,28 +28,52 @@ export default function SignupForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.password !== form.confirmPassword) {
       setStatus("error");
       return;
     }
-    setStatus("normal");
-    setStep("otp");
+    setStatus("loading");
+  const res = await fetch(`${BACKEND_URL}/api/users/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+      }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setStep("otp");
+      setStatus("normal");
+    } else {
+      setStatus("error");
+    }
   };
 
-  const handleOtpVerify = (enteredOtp: string) => {
-    setStatus("loading");
 
-    // Simulate API call delay
-    setTimeout(() => {
-      if (enteredOtp === "123456") {
-        setStatus("normal");
-        setStep("success");
-      } else {
-        setStatus("error");
-      }
-    }, 2000); // 2 second delay for loader demo
+  const handleOtpVerify = async (enteredOtp: string) => {
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+    setStatus("loading");
+  const res = await fetch(`${BACKEND_URL}/api/users/verify-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: form.email,
+        otp: enteredOtp,
+      }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setStep("success");
+      setStatus("normal");
+    } else {
+      setStatus("error");
+    }
   };
 
   return (
