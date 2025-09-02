@@ -1,5 +1,6 @@
 "use client";
-
+import React, { useEffect, useState } from "react";
+import { SparklesCore } from "@/components/ui/sparkles";
 import WrapButton from "@/components/ui/wrap-button";
 import { SkiperCard } from "@/components/ui/skiper-card";
 import {
@@ -24,7 +25,22 @@ export default function Home() {
       <TopBar />
 
       {/* ---------------- HERO SECTION ---------------- */}
-      <section className="relative flex flex-col items-center justify-center min-h-[80vh] sm:min-h-screen text-center px-4 pt-20">
+      <section className="relative flex flex-col items-center justify-center min-h-[80vh] sm:min-h-screen text-center px-4 pt-20 overflow-hidden">
+        {/* Sparkles background */}
+        <div className="absolute inset-0">
+          <SparklesCore
+            background="transparent"
+            minSize={1.3}
+            maxSize={1.5}
+            particleDensity={150}
+            className="w-full h-full"
+            particleColor="#A020F0" // 👈 dynamic color
+          />
+          {/* Radial mask to soften edges */}
+          <div className="absolute inset-0 w-full h-full bg-background [mask-image:radial-gradient(500px_300px_at_center,transparent_20%,white)]"></div>
+        </div>
+
+        {/* Foreground content */}
         <div className="relative z-10 flex flex-col items-center justify-center space-y-6 max-w-3xl mx-auto">
           <h1 className="text-3xl sm:text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 bg-clip-text text-transparent drop-shadow-lg leading-tight">
             Smart Internship Matching

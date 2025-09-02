@@ -26,6 +26,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "1000logos.net",
       },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc", // 👈 Added for profile avatars
+      },
     ],
   },
 };

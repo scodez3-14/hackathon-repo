@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useStepStore } from "../_store/stepStore";
+import { useStepStore } from "../../_store/stepStore";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,25 +14,22 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
+// 👇 import Aceternity UI FileUpload
+import { FileUpload } from "@/components/ui/file-upload";
+
 export default function EducationPage() {
   const router = useRouter();
   const setStep = useStepStore((state) => state.setStep);
 
-  const [fileName, setFileName] = useState("");
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length) {
-      setFileName(e.target.files[0].name);
-    }
-  };
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
 
-    if (form.checkValidity()) {
+    if (form.checkValidity() && uploadedFiles.length > 0) {
       setStep(5); // ✅ move to next step
-      router.push("/user/profile/bank"); // next page
+      router.push("/user/profile/skills"); // next page
     } else {
       form.reportValidity();
     }
@@ -46,7 +43,7 @@ export default function EducationPage() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-8 p-6 bg-card rounded-xl shadow-md max-w-5xl mx-auto"
+      className="space-y-8 p-4 sm:p-6 bg-card rounded-xl shadow-md max-w-5xl mx-auto"
     >
       <h2 className="text-xl font-semibold">Education Qualification</h2>
       <p className="text-sm text-muted-foreground">
@@ -117,18 +114,18 @@ export default function EducationPage() {
           <Input placeholder="Enter marks" required />
         </div>
 
-        {/* Upload Certificate */}
-        <div className="flex flex-col gap-2">
+        {/* 🆕 Upload Certificate */}
+        <div className="flex flex-col gap-2 col-span-1 md:col-span-2">
           <Label>Upload Certificate</Label>
-          <Input
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={handleFileChange}
-            required
+          <FileUpload
+            onChange={(files) => {
+              setUploadedFiles(files);
+              console.log("Uploaded files:", files);
+            }}
           />
-          {fileName && (
-            <p className="text-xs text-muted-foreground">
-              Selected: {fileName}
+          {uploadedFiles.length > 0 && (
+            <p className="text-xs text-muted-foreground mt-2">
+              {uploadedFiles.length} file(s) selected
             </p>
           )}
         </div>

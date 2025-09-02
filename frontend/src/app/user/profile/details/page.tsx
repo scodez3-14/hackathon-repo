@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useStepStore } from "../_store/stepStore";
+import { useStepStore } from "../../_store/stepStore";
 import { useRouter } from "next/navigation";
 import OtpVerify from "@/components/common/otp";
 import { motion, AnimatePresence } from "framer-motion";

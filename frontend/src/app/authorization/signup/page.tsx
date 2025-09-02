@@ -1,5 +1,6 @@
 "use client";
 
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import SignupForm from "./signup";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

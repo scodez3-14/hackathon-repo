@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -28,7 +29,6 @@ export default function SignupForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +37,7 @@ export default function SignupForm() {
       return;
     }
     setStatus("loading");
-  const res = await fetch(`${BACKEND_URL}/api/users/register`, {
+    const res = await fetch(`${BACKEND_URL}/api/users/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -55,11 +55,10 @@ export default function SignupForm() {
     }
   };
 
-
   const handleOtpVerify = async (enteredOtp: string) => {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     setStatus("loading");
-  const res = await fetch(`${BACKEND_URL}/api/users/verify-email`, {
+    const res = await fetch(`${BACKEND_URL}/api/users/verify-email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -77,38 +76,50 @@ export default function SignupForm() {
   };
 
   return (
-    <Card className="w-full max-w-md shadow-xl rounded-2xl bg-gradient-to-b from-background via-muted to-background relative">
-      <CardHeader>
-        {/* Progress Indicator */}
-        <div className="flex items-center justify-center gap-2 mb-6 relative">
-          {/* Step 1 */}
+    <div className="relative w-full">
+      <GlowingEffect
+        blur={0}
+        spread={80}
+        borderWidth={3}
+        glow={true}
+        disabled={false}
+        proximity={64}
+        inactiveZone={0.01}
+        movementDuration={1.5}
+        className="rounded-2xl"
+      />
+      <Card className="w-full max-w-md shadow-xl rounded-2xl bg-gradient-to-b from-background via-muted to-background relative">
+        <CardHeader>
+          {/* Progress Indicator */}
+          <div className="flex items-center justify-center gap-2 mb-6 relative">
+            {/* Step 1 */}
 
-          <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10
             ${
               step === "form"
                 ? "bg-yellow-500 text-black"
                 : "bg-green-500 text-white"
             }`}
-          >
-            1
-          </div>
+            >
+              1
+            </div>
 
-          {/* Animated Line */}
-          <div className="relative flex-1 h-1 bg-border overflow-hidden">
-            {step !== "form" && (
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 0.6 }}
-                className="h-full bg-green-500"
-              />
-            )}
-          </div>
+            {/* Animated Line */}
+            <div className="relative flex-1 h-1 bg-border overflow-hidden">
+              {step !== "form" && (
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 0.6 }}
+                  className="h-full bg-green-500"
+                />
+              )}
+            </div>
 
-          {/* Step 2 */}
-          <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10
+            {/* Step 2 */}
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10
             ${
               step === "otp"
                 ? status === "error"
@@ -118,143 +129,144 @@ export default function SignupForm() {
                 ? "bg-green-500 text-white"
                 : "bg-muted text-foreground/50"
             }`}
-          >
-            2
-          </div>
-        </div>
-
-        <CardTitle className="text-center text-2xl font-bold">
-          {step === "form"
-            ? "Create Account"
-            : step === "otp"
-            ? "Verify Email"
-            : "Success 🎉"}
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        {step === "form" && (
-          <form className="space-y-5" onSubmit={handleFormSubmit}>
-            {/* Full Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                placeholder="John Doe"
-                className="focus:ring-2 focus:ring-primary transition-all"
-                value={form.name}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="john@example.com"
-                className="focus:ring-2 focus:ring-primary transition-all"
-                value={form.email}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-
-            {/* Password */}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Enter password"
-                className="focus:ring-2 focus:ring-primary transition-all"
-                value={form.password}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-
-            {/* Confirm Password */}
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm password"
-                className="focus:ring-2 focus:ring-primary transition-all"
-                value={form.confirmPassword}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              Sign Up
-            </Button>
+              2
+            </div>
+          </div>
 
-            {/* Trust Info */}
-            <p className="text-xs text-muted-foreground text-center mt-3">
-              🔒 Your information is secure & will never be shared with third
-              parties.
-            </p>
-          </form>
-        )}
+          <CardTitle className="text-center text-2xl font-bold">
+            {step === "form"
+              ? "Create Account"
+              : step === "otp"
+              ? "Verify Email"
+              : "Success 🎉"}
+          </CardTitle>
+        </CardHeader>
 
-        {step === "otp" && (
-          <div className="space-y-6">
-            {/* Show Email */}
-            <p className="text-sm text-center text-muted-foreground">
-              We have sent a valid OTP to{" "}
-              <span className="font-semibold">{form.email}</span>
-            </p>
-
-            {/* Loader or OTP Verify */}
-            {status === "loading" ? (
-              <div className="flex flex-col items-center justify-center gap-3 py-6">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-sm text-muted-foreground">Verifying...</p>
+        <CardContent>
+          {step === "form" && (
+            <form className="space-y-5" onSubmit={handleFormSubmit}>
+              {/* Full Name */}
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="John Doe"
+                  className="focus:ring-2 focus:ring-primary transition-all"
+                  value={form.name}
+                  onChange={handleFormChange}
+                  required
+                />
               </div>
-            ) : (
-              <>
-                <OtpVerify onVerify={handleOtpVerify} />
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setStep("form")}
-                >
-                  ← Back
-                </Button>
-              </>
-            )}
-          </div>
-        )}
 
-        {step === "success" && (
-          <div className="text-center space-y-6">
-            <p className="text-green-600 font-semibold text-lg">
-              ✅ Your account has been created successfully!
-            </p>
-            <Button
-              className="w-full"
-              onClick={() => {
-                router.push("/user");
-              }}
-            >
-              Go to Dashboard
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+              {/* Email */}
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="john@example.com"
+                  className="focus:ring-2 focus:ring-primary transition-all"
+                  value={form.email}
+                  onChange={handleFormChange}
+                  required
+                />
+              </div>
+
+              {/* Password */}
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter password"
+                  className="focus:ring-2 focus:ring-primary transition-all"
+                  value={form.password}
+                  onChange={handleFormChange}
+                  required
+                />
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Confirm password"
+                  className="focus:ring-2 focus:ring-primary transition-all"
+                  value={form.confirmPassword}
+                  onChange={handleFormChange}
+                  required
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Sign Up
+              </Button>
+
+              {/* Trust Info */}
+              <p className="text-xs text-muted-foreground text-center mt-3">
+                🔒 Your information is secure & will never be shared with third
+                parties.
+              </p>
+            </form>
+          )}
+
+          {step === "otp" && (
+            <div className="space-y-6">
+              {/* Show Email */}
+              <p className="text-sm text-center text-muted-foreground">
+                We have sent a valid OTP to{" "}
+                <span className="font-semibold">{form.email}</span>
+              </p>
+
+              {/* Loader or OTP Verify */}
+              {status === "loading" ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-6">
+                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm text-muted-foreground">Verifying...</p>
+                </div>
+              ) : (
+                <>
+                  <OtpVerify onVerify={handleOtpVerify} />
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setStep("form")}
+                  >
+                    ← Back
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
+
+          {step === "success" && (
+            <div className="text-center space-y-6">
+              <p className="text-green-600 font-semibold text-lg">
+                ✅ Your account has been created successfully!
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  router.push("/user");
+                }}
+              >
+                Go to Dashboard
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
