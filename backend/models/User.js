@@ -21,6 +21,17 @@ const educationSchema = new mongoose.Schema({
   certificateUrl: String,
 }, { _id: false });
 
+const contactDetailsSchema = new mongoose.Schema({
+  registeredMobile: String,
+  alternateMobile: String,
+  mobileBelongsToUser: Boolean,
+  mobileOwnerName: String,
+  relationWithOwner: String,
+  email: String,
+  otp: String,
+  otpVerified: Boolean,
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -37,15 +48,16 @@ const userSchema = new mongoose.Schema({
   isPermanentSameAsCurrent: Boolean,
   differentlyAbled: Boolean,
 
-  registeredMobile: String,
-  alternateMobile: String,
-  mobileBelongsToUser: Boolean,
-  mobileOwnerName: String,
-  relationWithOwner: String,
-  otp: String,
+
+  // Contact details section
+  contactDetails: contactDetailsSchema,
 
   education: [educationSchema],
   skills: [String],
+  interests: [String],
+  githubLink: String,
+  certifications: String,
+  otherDetails: String,
   languages: [String],
   profileCompleted: { type: Boolean, default: false },
 
