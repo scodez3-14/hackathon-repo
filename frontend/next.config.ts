@@ -30,6 +30,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "i.pravatar.cc", // 👈 Added for profile avatars
       },
+      {
+        protocol: "https",
+        hostname: "logo.clearbit.com", // 👈 Added for Clearbit logos
+      },
     ],
   },
 };

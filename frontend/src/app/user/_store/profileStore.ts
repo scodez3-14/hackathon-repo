@@ -6,6 +6,6 @@ interface ProfileState {
 }
 
 export const useProfileStore = create<ProfileState>((set) => ({
-  isProfileComplete: true, // default false
+  isProfileComplete: false, // default false
   setProfileComplete: (status) => set({ isProfileComplete: status }),
 }));
