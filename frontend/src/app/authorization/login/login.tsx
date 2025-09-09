@@ -25,7 +25,7 @@ export default function LoginForm() {
     setStatus("loading");
     setErrorMsg("");
     try {
-      const res = await fetch(`/api/user/login`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -37,10 +37,10 @@ export default function LoginForm() {
       if (res.ok) {
         setStatus("normal");
         // Save token, redirect, etc.
-        router.push("/authorization/login");
+        router.push("/user/profile");
       } else {
         setStatus("error");
-        setErrorMsg(data.error || "Login failed");
+        setErrorMsg(data.msg || "Login failed");
       }
     } catch (err) {
       setStatus("error");
