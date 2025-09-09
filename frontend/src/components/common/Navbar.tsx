@@ -13,7 +13,7 @@ export default function BottomNavbar() {
 
   const links = [
     { name: "Home", href: "/" },
-    { name: "Matches", href: "/matches" },
+    { name: "Explore", href: "/explore" },
     { name: "Feedback", href: "/feedback" },
     { name: "Upload", href: "/upload" },
   ];
