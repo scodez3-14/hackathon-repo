@@ -17,5 +17,11 @@ export async function sendVerificationEmail(email, otp) {
     text: `Your verification code is: ${otp}`,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Verification email sent:', info.response);
+  } catch (err) {
+    console.error('Error sending verification email:', err);
+    throw err;
+  }
 }
