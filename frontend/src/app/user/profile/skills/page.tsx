@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
@@ -28,17 +27,39 @@ const skillOptions = [
   "Node.js",
 ];
 
-const interestOptions = ["Tech", "Finance", "Quant", "Design", "Marketing"];
+const sectorOptions = [
+  "AI",
+  "Web Development",
+  "Machine Learning",
+  "Data Science",
+  "Cybersecurity",
+  "Blockchain",
+  "Cloud Computing",
+  "DevOps",
+  "UI/UX Design",
+  "Mobile Development",
+];
 
 export default function SkillsPage() {
   const setStep = useStepStore((state) => state.setStep);
   const router = useRouter();
   const { isProfileComplete, setProfileComplete } = useProfileStore();
+
   const [skills, setSkills] = useState<string[]>([]);
-  const [interests, setInterests] = useState<string[]>([]);
-  const [githubLink, setGithubLink] = useState("");
-  const [certifications, setCertifications] = useState("");
-  const [otherDetails, setOtherDetails] = useState("");
+  const [certificateFile, setCertificateFile] = useState<File | null>(null);
+  const [sectorPreferences, setSectorPreferences] = useState<string[]>(["", "", ""]);
+  const [locationPreferences, setLocationPreferences] = useState<
+    { state: string; district: string; city: string }[]
+  >([
+    { state: "", district: "", city: "" },
+    { state: "", district: "", city: "" },
+    { state: "", district: "", city: "" },
+  ]);
+
+  const handlePrevious = () => {
+    setStep(5);
+    router.push("/user/profile/bank");
+  };
 
   const handleAddSkill = (skill: string) => {
     if (!skills.includes(skill)) setSkills([...skills, skill]);
@@ -48,28 +69,88 @@ export default function SkillsPage() {
     setSkills(skills.filter((s) => s !== skill));
   };
 
-  const handleAddInterest = (interest: string) => {
-    if (!interests.includes(interest)) setInterests([...interests, interest]);
+  const handleSectorSelect = (rank: number, value: string) => {
+    setSectorPreferences((prev) => {
+      const updated = [...prev];
+      updated[rank] = value;
+      return updated;
+    });
   };
 
-  const handleRemoveInterest = (interest: string) => {
-    setInterests(interests.filter((i) => i !== interest));
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setCertificateFile(file);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLocationChange = (
+    rank: number,
+    field: "state" | "district" | "city",
+    value: string
+  ) => {
+    setLocationPreferences((prev) => {
+      const updated = [...prev];
+      updated[rank] = { ...updated[rank], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (interests.includes("Tech") && !githubLink) {
-      alert("⚠️ Please provide your GitHub repo link for Tech interest!");
+
+    try {
+      // Save skills, sector & location preferences
+      const skillsRes = await fetch(
+        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/users/profile/skills",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            skills,
+            sectorPreferences,
+            locationPreferences,
+          }),
+          credentials: "include",
+        }
+      );
+
+      if (!skillsRes.ok) {
+        throw new Error("Failed to save skills");
+      }
+
+      // Upload certificate file if present
+      if (certificateFile) {
+        const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
+        if (allowedTypes.includes(certificateFile.type)) {
+          const formData = new FormData();
+          formData.append("certificate", certificateFile);
+          formData.append("educationIndex", "0");
+
+          const certRes = await fetch(
+            process.env.NEXT_PUBLIC_BACKEND_URL +
+              "/api/users/profile/education/certificate",
+            {
+              method: "POST",
+              body: formData,
+              credentials: "include",
+            }
+          );
+
+          if (!certRes.ok) {
+            throw new Error("Failed to upload certificate");
+          }
+        } else {
+          alert("Invalid file type. Only PDF, JPG, JPEG, PNG allowed.");
+          return;
+        }
+      }
+
+      setStep(7);
+      if (!isProfileComplete) setProfileComplete(true);
+      router.push("/user/profile/complete");
+    } catch (err) {
+      alert("Failed to save skills or upload certificate. Please try again.");
       return;
     }
-    setStep(7); // ✅ next step
-    if (!isProfileComplete) setProfileComplete(true);
-    router.push("/user/profile/complete"); // next page
-  };
-
-  const handlePrevious = () => {
-    setStep(5); // back to Bank details
-    router.push("/user/profile/bank");
   };
 
   return (
@@ -81,7 +162,6 @@ export default function SkillsPage() {
         Skills, Certifications & Experience
       </h2>
 
-      {/* Skills */}
       {/* Skills */}
       <div className="flex flex-col gap-2">
         <Label>My Skills</Label>
@@ -118,75 +198,114 @@ export default function SkillsPage() {
         </div>
       </div>
 
-      {/* Interests */}
-      {/* Interests */}
-      {/* Interests */}
-      <div className="flex flex-col gap-2">
-        <Label>My Interests</Label>
-        <Select onValueChange={handleAddInterest}>
-          <SelectTrigger>
-            {interests.length === 0 ? (
-              <span className="text-muted-foreground">Select interests</span>
-            ) : (
-              <span className="text-muted-foreground">Add more interests</span>
-            )}
-          </SelectTrigger>
-          <SelectContent>
-            {interestOptions.map((interest) => (
-              <SelectItem key={interest} value={interest}>
-                {interest}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Certificate Upload */}
+      <div className="space-y-2">
+        <Label htmlFor="certificate" className="font-medium">
+          Upload Certificate (PDF/JPG/PNG)
+        </Label>
+        <Input
+          id="certificate"
+          name="certificate"
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png"
+          onChange={handleFileChange}
+          className="block w-full border border-border rounded-lg px-3 py-2 bg-background focus:ring-2 focus:ring-primary transition-all shadow-sm"
+        />
+        {certificateFile && (
+          <div className="text-xs text-muted-foreground mt-1">
+            Selected: {certificateFile.name}
+          </div>
+        )}
+      </div>
 
-        <div className="flex flex-wrap gap-2 mt-2">
-          {interests.map((interest) => (
-            <span
-              key={interest}
-              className="px-3 py-1 bg-blue-200 text-blue-800 rounded-full flex items-center gap-2"
-            >
-              {interest}
-              <X
-                className="w-4 h-4 cursor-pointer"
-                onClick={() => handleRemoveInterest(interest)}
-              />
-            </span>
+      {/* Sector Preferences */}
+      <div className="space-y-2">
+        <Label className="font-medium">Sector Preferences (Rank 1, 2, 3)</Label>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[0, 1, 2].map((rank) => (
+            <div key={rank} className="flex flex-col gap-1">
+              <Label
+                htmlFor={`sector-rank-${rank}`}
+                className="text-sm font-medium"
+              >
+                Preference {rank + 1}
+              </Label>
+              <select
+                id={`sector-rank-${rank}`}
+                value={sectorPreferences[rank]}
+                onChange={(e) => handleSectorSelect(rank, e.target.value)}
+                className="block w-full border border-border rounded-lg px-3 py-2 bg-background focus:ring-2 focus:ring-primary transition-all shadow-sm"
+              >
+                <option value="">Select sector</option>
+                {sectorOptions.map((option) => (
+                  <option
+                    key={option}
+                    value={option}
+                    disabled={
+                      sectorPreferences.includes(option) &&
+                      sectorPreferences[rank] !== option
+                    }
+                  >
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
           ))}
         </div>
-      </div>
-
-      {/* GitHub Link if Tech selected */}
-      {interests.includes("Tech") && (
-        <div className="flex flex-col gap-2">
-          <Label>GitHub Repository Link</Label>
-          <Input
-            type="url"
-            placeholder="https://github.com/your-repo"
-            value={githubLink}
-            onChange={(e) => setGithubLink(e.target.value)}
-          />
+        <div className="text-xs text-muted-foreground mt-1">
+          Choose your top 3 sectors in order of preference.
         </div>
-      )}
-
-      {/* Additional Certifications */}
-      <div className="flex flex-col gap-2">
-        <Label>Additional Certifications (if any)</Label>
-        <Input
-          placeholder="Enter additional certifications"
-          value={certifications}
-          onChange={(e) => setCertifications(e.target.value)}
-        />
       </div>
 
-      {/* Other Details */}
-      <div className="flex flex-col gap-2">
-        <Label>Other Details (if any)</Label>
-        <Input
-          placeholder="Enter other details"
-          value={otherDetails}
-          onChange={(e) => setOtherDetails(e.target.value)}
-        />
+      {/* Location Preferences */}
+      <div className="space-y-2">
+        <Label className="font-medium">Location Preferences (Rank 1, 2, 3)</Label>
+        <div className="space-y-4">
+          {[0, 1, 2].map((rank) => (
+            <div
+              key={rank}
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 border p-3 rounded-lg"
+            >
+              <div>
+                <Label className="text-sm font-medium">State</Label>
+                <Input
+                  type="text"
+                  placeholder="Enter state"
+                  value={locationPreferences[rank].state}
+                  onChange={(e) =>
+                    handleLocationChange(rank, "state", e.target.value)
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-medium">District</Label>
+                <Input
+                  type="text"
+                  placeholder="Enter district"
+                  value={locationPreferences[rank].district}
+                  onChange={(e) =>
+                    handleLocationChange(rank, "district", e.target.value)
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-medium">City</Label>
+                <Input
+                  type="text"
+                  placeholder="Enter city"
+                  value={locationPreferences[rank].city}
+                  onChange={(e) =>
+                    handleLocationChange(rank, "city", e.target.value)
+                  }
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="text-xs text-muted-foreground mt-1">
+          Choose your top 3 location preferences with State, District, and City.
+        </div>
       </div>
 
       {/* Buttons */}
