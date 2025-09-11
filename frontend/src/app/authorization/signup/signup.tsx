@@ -258,7 +258,7 @@ export default function SignupForm() {
               <Button
                 className="w-full"
                 onClick={() => {
-                  router.push("/user");
+                  router.push("/user/dashboard");
                 }}
               >
                 Go to Dashboard
