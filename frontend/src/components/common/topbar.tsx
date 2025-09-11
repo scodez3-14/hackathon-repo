@@ -8,8 +8,8 @@ export default function TopBar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
         {/* Left: Login */}
         <Link
-          href="/authorization/login"
-          className="px-4 py-1.5 rounded-md bg-gradient-to-r from-purple-500 to-blue-500 text-white dark:text-foreground text-sm font-medium hover:opacity-90 transition"
+          href="/login"
+          className="px-4 py-1.5 rounded-md border border-border text-foreground/80 text-sm font-medium hover:bg-muted transition-colors"
         >
           Login
         </Link>
@@ -21,7 +21,7 @@ export default function TopBar() {
 
         {/* Right: Signup */}
         <Link
-          href="/authorization/signup"
+          href="authorization/signup"
           className="px-4 py-1.5 rounded-md bg-gradient-to-r from-purple-500 to-blue-500 text-white dark:text-foreground text-sm font-medium hover:opacity-90 transition"
         >
           Signup

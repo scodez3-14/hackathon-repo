@@ -9,7 +9,9 @@ import Link from "next/link";
 
 export default function LoginForm() {
   const router = useRouter();
-  const [status, setStatus] = useState<"normal" | "error" | "loading">("normal");
+  const [status, setStatus] = useState<"normal" | "error" | "loading">(
+    "normal"
+  );
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -25,14 +27,17 @@ export default function LoginForm() {
     setStatus("loading");
     setErrorMsg("");
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-        }),
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/users/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: form.email,
+            password: form.password,
+          }),
+        }
+      );
       const data = await res.json();
       if (res.ok) {
         setStatus("normal");
@@ -52,7 +57,9 @@ export default function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md shadow-xl rounded-2xl bg-gradient-to-b from-background via-muted to-background relative">
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold">Login</CardTitle>
+          <CardTitle className="text-center text-2xl font-bold">
+            Login
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form className="space-y-5" onSubmit={handleFormSubmit}>
@@ -95,7 +102,9 @@ export default function LoginForm() {
               {status === "loading" ? "Logging in..." : "Login"}
             </Button>
             <p className="text-xs text-muted-foreground text-center mt-3">
-              <Link href="/authorization/signup">Don't have an account? Sign Up</Link>
+              <Link href="/authorization/signup">
+                Don&#39;t have an account? Sign Up
+              </Link>
             </p>
           </form>
         </CardContent>
